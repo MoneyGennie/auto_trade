@@ -4,6 +4,12 @@ from indicators.superTrend import SuperTrend
 from strategies.supertrend_options import generate_trade_signal
 from execution.execution_manager import TradingAutomation
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 
 # For temp
 intraday_df = ''
@@ -17,11 +23,9 @@ symbol = 'BANKNIFTY'
 
 
 def connect_broker():
-    client_id = "1102077241"  # os.getenv('CLIENT_ID')
-    # os.getenv('ORDER_KEY')
-    order_key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzA2OTY1Nzc0LCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMjA3NzI0MSJ9.h-rgLcsq0qILq83BFXKMItM801ylZC4NOExqKl_QfvKToDoKwYppuiAsfActpBTu1ANweE0Tqd_-lGzzeiLOwg"
-    # os.getenv('DATA_KEY')
-    data_key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzA3MDY1NDE5LCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMjA3NzI0MSJ9.2RGM4-MrQGuhKf5EEZhE-1QreCvlecVLqXJFizp9PbQJQXjeB3Mtadxtpc3DD2hxyMb8SVQq5J8gZqaU6Si7Hw"
+    client_id = os.environ['CLIENT_ID']
+    order_key = os.environ['ORDER_KEY']
+    data_key = os.environ['DATA_KEY']
     broker = connector(client_id, order_key, data_key)
     data_dhan = broker.data_api_connect()
     order_dhan = broker.order_api_connect()

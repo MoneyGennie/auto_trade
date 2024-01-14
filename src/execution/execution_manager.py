@@ -1,4 +1,3 @@
-import schedule
 from datetime import datetime, time
 import time as sleep_time
 import sys
@@ -7,8 +6,6 @@ from strategies.supertrend_options import generate_trade_signal
 from .punch_order import OrderExecution  
 from data_collector.intraday_data_colletor import intradayDataCollector
 from symbols.symbols import symbol_generator
-import mplfinance as mpf
-import pandas as pd
 
 
 
@@ -54,13 +51,6 @@ class TradingAutomation:
             self.strike_price = self.df.iloc[-1]['open']
             self.date_today = datetime.now().date()
             self.formatted_date = self.date_today.strftime("%d/%m/%Y")
-            self.PUT_signal = "PUT"
-            self.CALL_signal = "CALL"
-            self.symbol_PUT = self.symbol_generator_obj.construct_supertrend_symbol (self.symbol, self.strike_price, self.formatted_date, trade_signal )
-            self.symbol_CALL = self.symbol_generator_obj.construct_supertrend_symbol (self.symbol, self.strike_price, self.formatted_date, trade_signal )
-            print(self.symbol_PUT, "PUT Position")
-            print(self.symbol_CALL, "CALL Position")
-
             self.dhan_order_obj.execute_hold()
 
     def schedule_execution(self):
@@ -77,7 +67,7 @@ class TradingAutomation:
 
                 # Sleep until the start of the next 15-minute interval
                 sleep_seconds = (time_until_next_interval * 60) # Add 10 seconds to make sure we are past the current minute
-                # sleep_time.sleep(sleep_seconds)
+                sleep_time.sleep(sleep_seconds)
 
                 # Execute the strategy
                 self.run_strategy()
