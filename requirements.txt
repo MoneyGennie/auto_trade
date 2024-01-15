@@ -2,3 +2,4 @@ nsepy==0.8
 dhanhq==1.2.3
 pandas==2.1.4
 python-dotenv==1.0.0
+yfinance==0.2.35

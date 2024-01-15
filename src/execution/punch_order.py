@@ -1,4 +1,4 @@
-from manage_order import fun_limits, open_positions, exit_position, new_position
+from .manage_order import fun_limits, open_positions, exit_position, new_position
 
 
 class OrderExecution:
