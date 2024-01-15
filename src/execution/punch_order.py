@@ -1,112 +1,34 @@
-import time
+from manage_order import fun_limits, open_positions, exit_position, new_position
 
 
 class OrderExecution:
     def __init__(self, my_acc):
         self.my_acc = my_acc
         self.sell_qty = 15
-        
+        self.position_type = "SHORT"
 
-    def execute_call(self, security_id):
-        response = self.my_acc.get_positions()
-        self.my_pos = response['data']
-        if len(self.my_pos) != 0:
-            exit_order_response = self.my_acc.place_order(
-                tag='',
-                transaction_type=self.my_acc.BUY,
-                exchange_segment=self.my_acc.FNO,
-                product_type=self.my_acc.CNC,
-                order_type=self.my_acc.MARKET,
-                validity='DAY',
-                security_id=self.my_pos['securityId'],
-                quantity=self.my_pos['sellQty'],
-                disclosed_quantity=0,
-                price=0,
-                trigger_price=0,
-                after_market_order=False,
-                amo_time='OPEN',
-                bo_profit_value=0,
-                bo_stop_loss_Value=0,
-                drv_expiry_date=None,
-                drv_options_type=None,
-                drv_strike_price=None    
-            )
-            order_id = exit_order_response['data']['orderId']
-            order_status = exit_order_response['data']['orderStatus']
-            while order_status != "TRADED":
-                response = self.my_acc.get_order_by_id(order_id)
-                order_status = response['data']['orderStatus']
-                print('Exit Order status: ', order_status)
-                time.sleep(0.5)
-            print('Exit Order status: ', order_status)
+    def execute_trade(self, security_id):
+        self.security_id = security_id
+        self.funds = fun_limits(self.my_acc)
+        print("funds available: ", self.funds)
+        securityId, qty, positionType = open_positions(self.my_acc)
+        if securityId != '0' and securityId != '-1':
+            status, orderId = exit_position(self.my_acc, securityId, qty, positionType )
+            if status == 'success':
+                print(f"Success (Existing Position): {orderId}")
+            else:
+                print(f"Failed (Existing Position) with reason: {orderId}")
 
-            new_order_response = self.my_acc.place_order(
-                    tag='',
-                    transaction_type=self.my_acc.SELL,
-                    exchange_segment=self.my_acc.FNO,
-                    product_type=self.my_acc.CNC,
-                    order_type=self.my_acc.MARKET,
-                    validity='DAY',
-                    security_id = security_id,
-                    quantity=self.sell_qty,
-                    disclosed_quantity=0,
-                    price=0,
-                    trigger_price=0,
-                    after_market_order=False,
-                    amo_time='OPEN',
-                    bo_profit_value=0,
-                    bo_stop_loss_Value=0,
-                    drv_expiry_date=None,
-                    drv_options_type=None,
-                    drv_strike_price=None    
-                )
-            order_id = new_order_response['data']['orderId']
-            order_status = new_order_response['data']['orderStatus']
-            while order_status != "TRADED":
-                response = self.my_acc.get_order_by_id(order_id)
-                order_status = response['data']['orderStatus']
-                print('New entry status: ', order_status)
-                time.sleep(0.5)
-            print('New entry status: ', order_status)
-
+        elif securityId == '0':
+            print("Currently no open position")
         else:
-            new_order_response = self.my_acc.place_order(
-                    tag='',
-                    transaction_type=self.my_acc.SELL,
-                    exchange_segment=self.my_acc.FNO,
-                    product_type=self.my_acc.CNC,
-                    order_type=self.my_acc.MARKET,
-                    validity='DAY',
-                    security_id = security_id,
-                    quantity=self.sell_qty,
-                    disclosed_quantity=0,
-                    price=0,
-                    trigger_price=0,
-                    after_market_order=False,
-                    amo_time='OPEN',
-                    bo_profit_value=0,
-                    bo_stop_loss_Value=0,
-                    drv_expiry_date=None,
-                    drv_options_type=None,
-                    drv_strike_price=None    
-                )
-            order_id = new_order_response['data']['orderId']
-            order_status = new_order_response['data']['orderStatus']
-            while order_status != "TRADED":
-                response = self.my_acc.get_order_by_id(order_id)
-                order_status = response['data']['orderStatus']
-                print('New entry status: ', order_status)
-                time.sleep(0.5)
-            print('New entry status: ', order_status)
-            
+            print(f"Failed with reason: {self.positionType}")
+        status, orderId = new_position(self.my_acc, self.security_id, self.sell_qty, self.position_type)
+        if status == 'success':
+            print(f"Success (New Position): {orderId}")
+        else:
+            print(f"Failed (New Position) with reason: {orderId}")
 
-
-        
-            
-    
-    def execute_put(self):
-        # Add your logic for executing a "PUT" order
-        print("Executing PUT order")
 
     def execute_hold(self):
         # Add your logic for executing a "hold" order

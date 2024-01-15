@@ -31,6 +31,7 @@ class TradingAutomation:
         print("calling strategy now")
         self.intraday_df = self.data_collector_obj.get_intraday_data()
         self.df = SuperTrend(self.intraday_df, self.period, self.multiplier)
+        print(self.df.tail())
         self.df.to_csv("supertrend.csv", index= False)
         trade_signal = generate_trade_signal(self.df, self.period, self.multiplier)
         # Execute actions based on the trade signal (PUT, CALL, hold)
@@ -39,14 +40,13 @@ class TradingAutomation:
             self.date_today = datetime.now().date()
             self.formatted_date = self.date_today.strftime("%d/%m/%Y")
             self.security_id = self.symbol_generator_obj.construct_supertrend_symbol (self.symbol, self.strike_price, self.formatted_date, trade_signal )
-            self.dhan_order_obj.execute_put(self.security_id)
+            self.dhan_order_obj.execute_trade(self.security_id)
         elif trade_signal == "CALL":
             self.strike_price = self.df.iloc[-1]['open']
             self.date_today = datetime.now().date()
             self.formatted_date = self.date_today.strftime("%d/%m/%Y")
-            print(self.date_today)
             self.security_id = self.symbol_generator_obj.construct_supertrend_symbol (self.symbol, self.strike_price, self.formatted_date, trade_signal )
-            self.dhan_order_obj.execute_call(self.security_id)
+            self.dhan_order_obj.execute_trade(self.security_id)
         elif trade_signal == "hold":
             self.strike_price = self.df.iloc[-1]['open']
             self.date_today = datetime.now().date()
