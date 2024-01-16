@@ -49,10 +49,8 @@ class intradayDataCollector():
             previous_days_data = pd.read_csv('BN15min.csv')
             previous_days_data.columns = previous_days_data.columns.str.lower()
             intraday_data.set_index('date', inplace=True)
-            if previous_days_data.iloc[-1]['date'] != new_rows.iloc[-1]['date']:
-                complete_data = pd.concat([previous_days_data, new_rows], ignore_index=True)
-            else:
-                complete_data = previous_days_data
+            complete_data = pd.concat([previous_days_data, new_rows], ignore_index=True)
+            complete_data.to_csv("complete_data.csv", index=False)
             return complete_data
 
     def convert_to_15min(self, df):
@@ -67,18 +65,17 @@ class intradayDataCollector():
 
             # Iterate through each group
             for _, group in grouped_data:
-                result_data = pd.concat([
-                    result_data,
-                    pd.DataFrame({
-                        'date': [group['date'].iloc[0]],
-                        'open': [group['open'].iloc[0]],
-                        'high': [group['high'].max()],
-                        'low': [group['low'].min()],
-                        'close': [group['close'].iloc[-1]],
-                        'volume': [group['volume'].sum()]
-                    })
-                ])
-            
-
+                if len(group) == 15:
+                    result_data = pd.concat([
+                        result_data,
+                        pd.DataFrame({
+                            'date': [group['date'].iloc[0]],
+                            'open': [group['open'].iloc[0]],
+                            'high': [group['high'].max()],
+                            'low': [group['low'].min()],
+                            'close': [group['close'].iloc[-1]],
+                            'volume': [group['volume'].sum()]
+                        })
+                    ])
             result_data.to_csv("my_logic.csv",  index=False)
         return result_data

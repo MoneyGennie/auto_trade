@@ -5,10 +5,12 @@ class OrderExecution:
     def __init__(self, my_acc):
         self.my_acc = my_acc
         self.sell_qty = 15
-        self.position_type = "SHORT"
+        self.position_type = "LONG"
 
     def execute_trade(self, security_id):
-        self.security_id = security_id
+        self.security_id = str(security_id)
+        print(self.security_id)
+        print(type(self.security_id))
         self.funds = fun_limits(self.my_acc)
         print("funds available: ", self.funds)
         securityId, qty, positionType = open_positions(self.my_acc)
@@ -32,15 +34,9 @@ class OrderExecution:
 
     def execute_hold(self):
         # Add your logic for executing a "hold" order
-        self.my_pos = self.my_acc.get_positions()
-        if len(self.my_pos['data']) != 0:
-            print("Current Position detils:")
-            for item in self.my_pos:
-                print(f"Trading Symbol: {item['tradingSymbol']}")
-                print(f"Position Type: {item['positionType']}")
-                print(f"Realized Profit: {item['realizedProfit']}")
-                print(f"Unrealized Profit: {item['unrealizedProfit']}")
-                print()
+        securityId, qty, positionType = open_positions(self.my_acc)
+        if securityId != '0' and securityId != '-1':
+            print(f"Current Position detils: Security ID {securityId}, Quantity {qty}, Position Type {positionType}")
         else:
             print("Currently No Open Position")
 
